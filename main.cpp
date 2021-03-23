@@ -9,77 +9,54 @@
 
 using namespace std;
 
-//struct HuffmanNode
-//{
-//    char data;
-//    int freq;
-
-//    HuffmanNode *left = nullptr;
-//    HuffmanNode *right = nullptr;
-
-//    HuffmanNode(char data, int freq)
-//    {
-//        this->data = data;
-//        this->freq = freq;
-//    }
-//};
-
-//class compareHNode
-//{
-//public:
-//    bool operator()(HuffmanNode* left, HuffmanNode* right)
-//    {
-//        return(left->freq > right->freq);
-//    }
-//};
 
 //TODO: Put these methods in a class called HuffmanTree along with all necessary
 //dependencies
-void printTree(HuffmanNode* root, string str, map<char, string> bitmap)
-{
-    if(root == nullptr)
-        return;
+//void printTree(HuffmanNode* root, string str, map<char, string> bitmap)
+//{
+//    if(root == nullptr)
+//        return;
 
 
-    if(root->data != 27)
-    {
-        if(root->data == '\n')
-            cout << "'\\n'";
-        else
-            cout << root->data;
-        cout << ": " << str << endl;
-        bitmap.insert(pair<char, string>(root->data, str));
-    }
+//    if(root->data != 27)
+//    {
+//        if(root->data == '\n')
+//            cout << "'\\n'";
+//        else
+//            cout << root->data;
+//        cout << ": " << str << endl;
+//        bitmap.insert(pair<char, string>(root->data, str));
+//    }
 
-    printTree(root->left, str + "0", bitmap);
-    printTree(root->right, str + "1", bitmap);
-}
+//    printTree(root->left, str + "0", bitmap);
+//    printTree(root->right, str + "1", bitmap);
+//}
 
-void generateTree(vector<pair<char, int>> chars)
-{
-    priority_queue<HuffmanNode*, vector<HuffmanNode*>, compareHNode> tree;
-    for(int i = 0; i < chars.size(); i++)
-    {
-        tree.push(new HuffmanNode(chars.at(i).first, chars.at(i).second));
-    }
+//void generateTree(vector<pair<char, int>> chars)
+//{
+//    priority_queue<HuffmanNode*, vector<HuffmanNode*>, compareHNode> tree;
+//    for(int i = 0; i < chars.size(); i++)
+//    {
+//        tree.push(new HuffmanNode(chars.at(i).first, chars.at(i).second));
+//    }
 
-    while(tree.size() != 1)
-    {
-        HuffmanNode* left = tree.top();
-        tree.pop();
-        HuffmanNode* right = tree.top();
-        tree.pop();
+//    while(tree.size() != 1)
+//    {
+//        HuffmanNode* left = tree.top();
+//        tree.pop();
+//        HuffmanNode* right = tree.top();
+//        tree.pop();
 
-        HuffmanNode* top = new HuffmanNode(27, left->freq + right->freq);
+//        HuffmanNode* top = new HuffmanNode(27, left->freq + right->freq);
 
-        top->left = left;
-        top->right = right;
+//        top->left = left;
+//        top->right = right;
 
-        tree.push(top);
-    }
+//        tree.push(top);
+//    }
 
-    //printTree(tree.top(), "");
-}
+//    //printTree(tree.top(), "");
+//}
 
 bool inMap(map<char, int> m, char value)
 {
@@ -133,20 +110,16 @@ vector<pair<char, int>> readFile()
 }
 int main()
 {
-
-    //readFile();
-    //generateTree(readFile());
-
-    HuffmanTree tree(readFile());
+    //Encoding a text file of The Great Gatsby, by F. Scott Fitzgerald
+    //Text file provided by Project Gutenberg Australia
+    //Link: http://gutenberg.net.au/ebooks02/0200041.txt
+    HuffmanTree tree("gatsby.txt");
     //cin.ignore(1000, '\n');
     //system("CLS");
-    cout << "Printing frequencies in main" << endl;
-    tree.printFreqs();
-    return 0;
-    char arr[] = { 'a', 'b', 'c', 'd', 'e', 'f', '#' };
-    int freq[] = { 5, 9, 12, 13, 16, 45, 10 };
-    int size = 7;
 
-    //generateTree(arr, freq, size);
+    cout << "Writing" << endl;
+    tree.printBits();
+    tree.toFile();
+    tree.fromFile("encoded.bin");
     return 0;
 }

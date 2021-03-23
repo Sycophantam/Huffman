@@ -14,6 +14,13 @@ struct HuffmanNode
         this->data = data;
         this->freq = freq;
     }
+    ~HuffmanNode()
+    {
+        if(left != nullptr)
+            delete left;
+        if(right != nullptr)
+            delete right;
+    }
 
     bool isLeaf()
     {
