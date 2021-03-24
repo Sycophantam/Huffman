@@ -16,10 +16,7 @@ struct HuffmanNode
     }
     ~HuffmanNode()
     {
-        if(left != nullptr)
-            delete left;
-        if(right != nullptr)
-            delete right;
+        left = right = nullptr;
     }
 
     bool isLeaf()

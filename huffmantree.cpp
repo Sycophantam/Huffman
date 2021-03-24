@@ -178,6 +178,19 @@ void HuffmanTree::write(ostream& outs) const
     }
 }
 
+/**********************************************************
+ *
+ * Function translateBits(): Class HuffmanTree
+ *_________________________________________________________
+ * This method reads in an encoded file and outputs the reconstructed file
+ *_________________________________________________________
+ * PRE-CONDITIONS
+ *     The following need predefined values:
+ *      buffer(vector<char>)- Vector of byte values
+ *
+ * POST-CONDITIONS
+ *     This function creates a file that is a copy of the original file
+ ***********************************************************/
 void HuffmanTree::translateBits(vector<char> buffer) const
 {
     HuffmanNode* temp = top;
@@ -190,21 +203,38 @@ void HuffmanTree::translateBits(vector<char> buffer) const
     //The first character in buffer is the first 8 bits from the file
     char read = buffer.at(0);
     int bitCounter = 8;
+    string text = "";
 
     while(true)
     {
-        //cout << "bitCounter is "
-        //Getting the first bit of the byte
+        if(((current + 1) % 1000 == 0) && DEBUG)
+        {
+            cout << "On byte " << current + 1 << endl;
+        }
+        //Getting the first bit of the byte   
         bool direction = (read & 0x80) >> 7;
+        if(DEBUG)
+        {
+            cout << "On byte " << current + 1 << endl;
+            cout << "bitCounter is " << bitCounter << endl;
+            cout << "read is ";
+            printBinary(read);
+            cout << endl;
+            cout << "Direction is " << direction << endl;
+        }
 
         //If the bit is a 1, we go to the right
         if(direction)
         {
+            if(DEBUG)
+                cout << "Going to the right" << endl;
             temp = temp->right;
         }
         //If not, we go to the left
         else
         {
+            if(DEBUG)
+                cout << "Going to the left" << endl;
             temp = temp->left;
         }
         //Shifting the byte to the left by one bit
@@ -215,9 +245,12 @@ void HuffmanTree::translateBits(vector<char> buffer) const
         if(bitCounter == 0)
         {
             read = buffer.at(current);
-//            cout << "read is ";
-//            printBinary(read);
-//            cout << endl;
+            if(DEBUG)
+            {
+                cout << "read is ";
+                printBinary(read);
+                cout << endl;
+            }
             current++;
             bitCounter = 8;
         }
@@ -228,18 +261,22 @@ void HuffmanTree::translateBits(vector<char> buffer) const
             //3 is our pseudo EOF character. We stop once we've read it in.
             if(temp->data == 3)
             {
+                if(DEBUG)
+                    cout << "Reached end" << endl;
                 break;
             }
             //If it's a normal character, we output it and reset temp
             outfile << temp->data;
             if(DEBUG)
-                cout << temp->data;
+                cout << temp->data << endl;
             temp = top;
         }
 
     }
     outfile.close();
+    //cout << "About to set temp to nullptr" << endl;
     temp = nullptr;
+    //cout << "Set temp to nullptr" << endl;
 }
 
 /**********************************************************
@@ -293,15 +330,27 @@ string HuffmanTree::createBitString() const
  ***********************************************************/
 void HuffmanTree::deleter(HuffmanNode *node)
 {
-    if(node->left != nullptr)
+    if(node == nullptr)
     {
-        deleter(node->left);
+        if(DEBUG)
+            cout << "nullptr. Going back up" << endl;
+        return;
     }
-    if(node->right != nullptr)
-    {
-        deleter(node->right);
-    }
+    if(DEBUG)
+        cout << "Going left" << endl;
+    deleter(node->left);
+    if(DEBUG)
+        cout << "Going right" << endl;
+    deleter(node->right);
+
+    if(DEBUG)
+        cout << "Data is " << node->data << endl;
     delete node;
+    if(DEBUG)
+    {
+        cout << "Deleted itself" << endl;
+        cout << "Going back up" << endl;
+    }
 }
 
 /**********************************************************
@@ -379,6 +428,13 @@ void HuffmanTree::printFreqsDriver(HuffmanNode* root) const
             cout << root->data;
         cout << ": " << root->freq << endl;
     }
+    //If you want to trace out the tree, you can uncomment this for an easier
+    //time
+
+//    if(root->data == 0)
+//    {
+//        cout << "NUL: 1" << endl;
+//    }
 
     if(DEBUG)
         cout << "Going to the left" << endl;
@@ -454,7 +510,8 @@ void HuffmanTree::toFile() const
     string bitString = createBitString();
     int bitCounter = 0; //Counts how many bits we've read
     std::uint8_t byte = 0;
-    cout << "Size of tree is: " << sizeof (*this) << endl;
+    if(DEBUG)
+        cout << "Size of tree is: " << sizeof (*this) << endl;
     for(int i = 0; i < bitString.length(); i++)
     {
         //If the string is a 1, then we add a 1 to the end of the string
@@ -476,26 +533,59 @@ void HuffmanTree::toFile() const
     }
 
     if(DEBUG)
-        cout << "Bitstring in toFile is: " << bitString << endl;
+    {
+        cout << "Bitstring in toFile is: " << bitString.substr(0,1000) << endl;
+        cout << "Last 1000 bits are: "
+             << bitString.substr(bitString.length() - 1001) << endl;
+    }
 
     outfile.close();
 
 }
 
+/**********************************************************
+ *
+ * Function translateBits()
+ *_________________________________________________________
+ * Helper function that prints a character as binary. Code taken from
+ * https://stackoverflow.com/questions/19844122/character-to-binary-conversion-
+ * in-c-two-characters-at-a-time-to-get-16-bit-bin/19844576
+ *_________________________________________________________
+ * PRE-CONDITIONS
+ *     The following need predefined values:
+ *      c(char)- Character to write in binary
+ *
+ * POST-CONDITIONS
+ *     This function outputs the binary string of the character
+ ***********************************************************/
 void printBinary(char c) {
     for (int i = 7; i >= 0; --i) {
         std::cout << ((c & (1 << i))? '1' : '0');
     }
 }
 
+/**********************************************************
+ *
+ * Function fromFile(): Class HuffmanTree
+ *_________________________________________________________
+ * This method takes in an encoded file and recreates the original text file
+ *_________________________________________________________
+ * PRE-CONDITIONS
+ *     The following need predefined values:
+ *      fname(string)- Name of the encoded file
+ *
+ * POST-CONDITIONS
+ *     Recreates the original text file from the encoded file
+ ***********************************************************/
 void HuffmanTree::fromFile(string fname) const
 {
     //Code to read in file came from
     //https://stackoverflow.com/questions/18816126/c-read-the-whole-file-in-buffer
     ifstream infile(fname, std::ios::binary | std::ios::ate);
+    infile.seekg(0, infile.end);
     streamsize size = infile.tellg();
-    infile.seekg(0, std::ios::beg);
-    vector<char> buffer(size);
+    infile.seekg(0, infile.beg);
+    vector<char> buffer(static_cast<unsigned long long>(size));
     infile.read(buffer.data(), size);
     translateBits(buffer);
     infile.close();

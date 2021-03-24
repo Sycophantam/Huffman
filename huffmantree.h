@@ -5,7 +5,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include <bits/stdc++.h>
+#include <queue>
 #include "HuffmanNode.h"
 
 using namespace std;
