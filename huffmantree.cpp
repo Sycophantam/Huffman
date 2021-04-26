@@ -29,6 +29,13 @@ HuffmanTree::HuffmanTree(string fileName)
     map<char, int> charMap;
     infile.open(fileName);
 
+    //Check if the file opens successfully
+    if (!infile.is_open())
+    {
+        cout << "Error opening file." << endl;
+        exit(1);
+    }
+
     //Reading each character from the file
     char c;
     while(infile.get(c))
