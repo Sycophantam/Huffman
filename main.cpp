@@ -7,16 +7,22 @@
 
 using namespace std;
 
-int main(int argc, char* argv[])
+int main(int arcg, char* argv[])
 {
-    //Allows for multiple command line arguments
-    for (int i = 1; i < argc; i++)
+    string fname = argv[1];
+    bool printFreqs = false;
+    if(fname == "-f")
     {
-        string fname = argv[i];
-        string noExtension = fname.substr(0, fname.find('.'));
-        HuffmanTree tree(fname);
-        tree.toFile();
-        tree.fromFile(noExtension + "_encoded.bin");
+	fname = argv[2];
+	printFreqs = true;
     }
+    string noExtension = fname.substr(0, fname.find('.'));
+    HuffmanTree tree(fname);
+    if(printFreqs)
+    {
+	tree.printFreqs();
+    }
+    tree.toFile();
+    tree.fromFile(noExtension + "_encoded.bin");
     return 0;
 }

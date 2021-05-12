@@ -29,13 +29,6 @@ HuffmanTree::HuffmanTree(string fileName)
     map<char, int> charMap;
     infile.open(fileName);
 
-    //Check if the file opens successfully
-    if (!infile.is_open())
-    {
-        cout << "Error opening file." << endl;
-        exit(1);
-    }
-
     //Reading each character from the file
     char c;
     while(infile.get(c))
@@ -438,10 +431,10 @@ void HuffmanTree::printFreqsDriver(HuffmanNode* root) const
     //If you want to trace out the tree, you can uncomment this for an easier
     //time
 
-//    if(root->data == 0)
-//    {
-//        cout << "NUL: 1" << endl;
-//    }
+    //if(root->data == 0)
+    //{
+    //    cout << "NUL: 1" << endl;
+    //}
 
     if(DEBUG)
         cout << "Going to the left" << endl;
